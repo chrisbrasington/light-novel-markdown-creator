@@ -16,7 +16,8 @@ def get_novel_info(url):
     status = soup.find('p', {'id': 'status'}).text.strip()
     type_ = soup.find('p', {'id': 'type'}).text.strip()
     genre = soup.find('p', {'id': 'genre'}).text.strip()
-    tags = [tag.strip() for tag in genre.split(',')]
+    # Parse tags and replace spaces with hyphens
+    tags = [tag.strip().replace(" ", "-") for tag in genre.split(',')]
     authors = soup.find('p', {'id': 'authors'}).text.strip()
     artist = soup.find('p', {'id': 'artist'}).text.strip()
     volume_count = soup.find('p', {'id': 'volumeCount'}).text.strip()
