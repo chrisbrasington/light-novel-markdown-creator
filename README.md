@@ -1,6 +1,3 @@
-### README.md
-
-```markdown
 # Novel Info Scraper
 
 This Python program scrapes information about light novels from a specified URL, including:
@@ -28,4 +25,3 @@ pip install requests-html beautifulsoup4
 - Extracts and organizes novel metadata.
 - Saves one Markdown file per volume with an `epubUrl` and `url` property.
 - Handles spaces in file names automatically.
-```
