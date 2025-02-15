@@ -54,7 +54,7 @@ def get_novel_info(url):
         "epubLinks": epub_links
     }
 
-def generate_markdown(info, volume_number, epub_url):
+def generate_markdown(info, volume_number, epub_url, source_url):
     tags_formatted = "\n  - ".join(info['tags'])
     markdown_content = f"""---
 title: "{info['title']} Volume {volume_number}"
@@ -72,6 +72,7 @@ synopsis: "{info['synopsis']}"
 tags:
   - {tags_formatted}
 epubUrl: {epub_url}
+url: {source_url}
 ---
 """
     return markdown_content
@@ -91,7 +92,7 @@ def main():
     # Create a file for each EPUB link found
     for volume_number, epub_url in info['epubLinks']:
         # Create Markdown content for each volume
-        markdown_content = generate_markdown(info, volume_number, epub_url)
+        markdown_content = generate_markdown(info, volume_number, epub_url, url)
 
         # Generate the filename and save the Markdown file
         file_name = f"{info['title']} Volume {volume_number}.md"
