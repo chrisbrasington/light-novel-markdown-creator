@@ -1,6 +1,6 @@
 # Novel Info Scraper
 
-This Python program scrapes information about light novels from a specified URL, including:
+This Python program scrapes information about light novels specifically from [esnovels.com](https://esnovels.com/), including:
 - Title, cover image, alternative title, status, type, genre, authors, artist, volume count, publisher, translation group, synopsis, and tags.
 - EPUB download links for each volume.
 
