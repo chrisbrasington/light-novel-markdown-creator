@@ -1,27 +1,63 @@
 import os
-import sys
 import re
 
 def fix_tags_in_file(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open(file_path, 'r') as file:
         lines = file.readlines()
-
-    in_properties = False
+    
+    in_front_matter = False
+    in_tags_section = False
     new_lines = []
 
-    for line in lines:
-        if line.strip() == '---': 
-            in_properties = not in_properties
-        
-        if in_properties and line.strip().startswith('- '): 
-            # Check if it's a tag line and replace spaces with hyphens
-            fixed_line = re.sub(r'- (.+)', lambda m: f"- {m.group(1).replace(' ', '-')}", line)
-            new_lines.append(fixed_line)
-        else:
-            new_lines.append(line)
+    for i, line in enumerate(lines):
+        stripped_line = line.strip()
 
-    # Save changes
-    with open(file_path, 'w', encoding='utf-8') as file:
+        # Toggle front matter detection
+        if stripped_line == '---':
+            if in_front_matter:
+                in_front_matter = False
+            else:
+                in_front_matter = True
+                in_tags_section = False
+
+        # Check for bad format tags (e.g., tags: ['Romance', 'Comedy'])
+        if in_front_matter and stripped_line.startswith('tags: ['):
+            in_tags_section = False  # Disable normal tags section processing
+            
+            # Extract the tags inside the brackets
+            tags_content = re.search(r"tags:\s*\[(.*)\]", stripped_line)
+            if tags_content:
+                tags = tags_content.group(1).split(',')
+                cleaned_tags = []
+
+                for tag in tags:
+                    # Clean and fix tags by stripping quotes and replacing spaces with hyphens
+                    tag = tag.strip().strip("'\"")
+                    tag = re.sub(r'\s+', '-', tag)
+                    cleaned_tags.append(f"  - {tag}")
+
+                # Replace the bad tags line with the fixed format
+                new_lines.append("tags:\n")
+                new_lines.extend([tag + "\n" for tag in cleaned_tags])
+                continue
+
+        # Detect proper tags section
+        if in_front_matter and stripped_line.startswith('tags:'):
+            in_tags_section = True
+            new_lines.append(line)
+            continue
+        elif in_tags_section:
+            if stripped_line.startswith('- '):
+                # Fix tags by replacing spaces with hyphens
+                fixed_tag = re.sub(r'\s+', '-', stripped_line[2:])
+                new_lines.append(f"  - {fixed_tag}\n")
+                continue
+            else:
+                in_tags_section = False
+
+        new_lines.append(line)
+
+    with open(file_path, 'w') as file:
         file.writelines(new_lines)
 
 def process_directory(directory):
@@ -32,15 +68,11 @@ def process_directory(directory):
                 print(f"Processing: {file_path}")
                 fix_tags_in_file(file_path)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
+    import sys
     if len(sys.argv) != 2:
-        print("Usage: python fix_tags.py <directory>")
-        sys.exit(1)
-    
-    directory = sys.argv[1]
-    if not os.path.isdir(directory):
-        print("Error: Provided path is not a directory.")
-        sys.exit(1)
-    
-    process_directory(directory)
+        print("Usage: python program.py <directory>")
+    else:
+        directory = sys.argv[1]
+        process_directory(directory)
 
