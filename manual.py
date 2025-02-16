@@ -1,4 +1,5 @@
 import os
+import re
 
 # Directory to save the markdown files
 directory = os.path.expanduser('~/obsidian/_inbox')
@@ -11,6 +12,11 @@ def prompt_input(prompt_text, default=""):
 # Escape special characters for Markdown
 def escape_markdown(text):
     return text.replace("'", "\\'").replace('"', '\\"')
+
+# Sanitize filenames by removing bad characters
+def sanitize_filename(filename):
+    # Remove any characters that are not allowed in filenames (like colons, slashes, etc.)
+    return re.sub(r'[<>:"/\\|?*\x00-\x1F]', '', filename)
 
 # Gather data from the user
 cover_url = prompt_input("Cover URL")
@@ -27,7 +33,10 @@ os.makedirs(directory, exist_ok=True)
 # Create a file for each volume
 for volume in range(1, num_volumes + 1):
     volume_title = f"{title} Volume {volume}"
-    filename = os.path.join(directory, f"{volume_title}.md")
+    
+    # Sanitize the filename to avoid bad characters
+    sanitized_filename = sanitize_filename(f"{volume_title}.md")
+    filename = os.path.join(directory, sanitized_filename)
 
     # Create the markdown content
     content = f"""---
@@ -50,4 +59,3 @@ tags:
     print(f"Created: {filename}")
 
 print("All files created successfully.")
-

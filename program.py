@@ -78,6 +78,10 @@ url: {source_url}
 """
     return markdown_content
 
+def sanitize_filename(filename):
+    # Remove any characters that are not allowed in filenames (like colons, slashes, etc.)
+    return re.sub(r'[<>:"/\\|?*\x00-\x1F]', '', filename)
+
 def main():
     if len(sys.argv) != 2:
         print("Usage: python program.py <novel_url>")
@@ -95,9 +99,12 @@ def main():
         # Create Markdown content for each volume
         markdown_content = generate_markdown(info, volume_number, epub_url, url)
 
-        # Generate the filename and save the Markdown file
+        # Generate the filename and sanitize it
         file_name = f"{info['title']} Volume {volume_number}.md"
-        file_path = os.path.join(save_dir, file_name)
+        sanitized_file_name = sanitize_filename(file_name)
+        file_path = os.path.join(save_dir, sanitized_file_name)
+        
+        # Save the markdown content to the file
         with open(file_path, 'w', encoding='utf-8') as file:
             file.write(markdown_content)
 
