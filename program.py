@@ -72,6 +72,7 @@ translationGroup: "{info['translationGroup']}"
 synopsis: "{info['synopsis']}"
 tags:
   - {tags_formatted}
+  - light-novel
 epubUrl: {epub_url}
 url: {source_url}
 ---
